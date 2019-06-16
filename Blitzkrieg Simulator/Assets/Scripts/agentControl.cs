@@ -17,6 +17,8 @@ public class agentControl : MonoBehaviour
 
     public NavMeshAgent agent;
 
+    public  GameObject bulletModel; 
+
     private void Update()
     {
         Physics.Raycast(turrent.transform.position, turrent.transform.forward, out sight);
@@ -39,18 +41,20 @@ public class agentControl : MonoBehaviour
             turrent.transform.rotation = Quaternion.Slerp(turrent.transform.rotation, Quaternion.Euler(0,0,0), timeCount);
             timeCount = timeCount + Time.deltaTime / 25;
         }
-
-        if (sight.collider.gameObject == target && range.collider.gameObject == target)
+        if (target != null && sight.collider != null && range.collider != null)
         {
-            //stop movement
-            agent.isStopped = true;
-            //shoot
-            shoot();
-        }
-        else
-        {
-            //continue movement
-            agent.isStopped = false;
+            if (sight.collider.gameObject == target && range.collider.gameObject == target)
+            {
+                //stop movement
+                agent.isStopped = true;
+                //shoot
+                StartCoroutine(shoot());
+            }
+            else
+            {
+                //continue movement
+                agent.isStopped = false;
+            }
         }
         if (canFire == false)
         {
@@ -62,12 +66,16 @@ public class agentControl : MonoBehaviour
         }
     }
 
+    public GameObject flash;
+
     public int ammo = 3;
     public bool canFire = true;
     public float reloadTime = 5;
     private float time = 0;
 
-    private void shoot()
+    public float firingTime = 1;
+
+    IEnumerator shoot()
     {
         if (ammo > 0 && canFire)
         {
@@ -75,9 +83,14 @@ public class agentControl : MonoBehaviour
             time = reloadTime;
             ammo--;
             //fire projectile
-            Debug.Log("FIRE!");
+            //instantiate object
+            yield return new WaitForSeconds(firingTime);
+            flash.SetActive(true);
+            Instantiate(bulletModel, turrent.transform.position, turrent.transform.rotation);
+            yield return new WaitForSeconds(0.25f);
+            flash.SetActive(false);
         }
-
+        
     }
 
 }

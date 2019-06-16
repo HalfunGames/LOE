@@ -81,6 +81,13 @@ public class masterScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (selectAgent != null && selectAgent.GetComponent<agentControl>().target != null)
+        {
+            if (!selectAgent.GetComponent<agentControl>().target.GetComponent<lightReference>().lightSource.activeInHierarchy)
+            {
+                selectAgent.GetComponent<agentControl>().target.GetComponent<lightReference>().lightSource.SetActive(true);
+            }
+        }
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         if (Input.GetMouseButtonDown(0) && popUpMenu.activeInHierarchy)
@@ -114,6 +121,10 @@ public class masterScript : MonoBehaviour
                                 if (selectAgent != null)
                                 {
                                     selectAgent.GetComponentInParent<lightReference>().lightSource.SetActive(false);
+                                    if (selectAgent.GetComponent<agentControl>().target != null)
+                                    {
+                                        selectAgent.GetComponent<agentControl>().target.GetComponent<lightReference>().lightSource.SetActive(false);
+                                    }
                                 }
                                 selectAgent = null;
                             }
@@ -246,6 +257,11 @@ public class masterScript : MonoBehaviour
         gameGroup.SetActive(true);
         pauseGroup.SetActive(false);
         Time.timeScale = 1;
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(1);
     }
 
     private bool optionsOpen = false;
